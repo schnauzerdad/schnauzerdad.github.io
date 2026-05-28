@@ -31,6 +31,7 @@
       background: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);
       border-radius: 12px;
       border-bottom: 4px solid var(--accent-gold);
+      position: relative;
     }
 
     header h1 {
@@ -49,6 +50,59 @@
     .container {
       max-width: 900px;
       margin: 0 auto;
+    }
+
+    .action-panel {
+      background-color: #111827;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px 25px;
+      margin-bottom: 25px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .voter-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .voter-box label {
+      color: var(--accent-gold);
+      font-weight: bold;
+    }
+
+    .voter-box input {
+      background: #1e2640;
+      border: 1px solid var(--text-muted);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    .pdf-btn {
+      background: linear-gradient(135deg, #dfb15b 0%, #b8860b 100%);
+      color: #0b0f19;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .pdf-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
     }
 
     .category-card {
@@ -95,13 +149,11 @@
       accent-color: var(--accent-gold);
     }
 
-    /* Style for when a user selects an item */
     .nominee-option.selected {
       background-color: rgba(79, 70, 229, 0.2);
       border-color: var(--selected-border);
     }
 
-    /* Scoreboard Section styling */
     .scoreboard-section {
       background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
       border: 2px dashed var(--accent-gold);
@@ -147,6 +199,82 @@
       color: var(--text-muted);
       font-size: 0.9rem;
     }
+
+    /* ==========================================================================
+       PRINT / PDF STYLES - Triggers automatically during window.print()
+       Transforms the dark dashboard into a stunning print-ready official ballot document
+       ========================================================================== */
+    @media print {
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0;
+      }
+      header {
+        background: #ffffff !important;
+        color: #000000 !important;
+        border-bottom: 2px solid #000000 !important;
+        padding: 20px 0 !important;
+        border-radius: 0 !important;
+      }
+      header h1 {
+        color: #000000 !important;
+        font-size: 2rem !important;
+      }
+      header p {
+        color: #444444 !important;
+      }
+      .action-panel, .scoreboard-section, footer {
+        display: none !important; /* Hide settings, action bar, and simulation controls in PDF */
+      }
+      .category-card {
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: 1px solid #cccccc !important;
+        border-left: 6px solid #000000 !important;
+        page-break-inside: avoid; /* Prevent split categories across pages */
+        padding: 15px !important;
+        margin-bottom: 15px !important;
+      }
+      .category-title {
+        color: #000000 !important;
+        border-bottom: 1px solid #444444 !important;
+        font-size: 1.2rem !important;
+      }
+      .nominee-option {
+        background: #ffffff !important;
+        border: 1px solid #eeeeee !important;
+        color: #666666 !important;
+        padding: 8px 12px !important;
+      }
+      /* Visual indicator on the PDF for what the user voted for */
+      .nominee-option.selected {
+        background-color: #f0f0f0 !important;
+        border: 2px solid #000000 !important;
+        color: #000000 !important;
+        font-weight: bold !important;
+      }
+      .nominee-option.selected::after {
+        content: " ✓ (Your Pick)";
+        float: right;
+        color: #000000;
+        font-weight: bold;
+      }
+      /* Display custom voter name prominently at the top of the PDF */
+      .print-voter-name {
+        display: block !important;
+        text-align: center;
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 20px;
+        border-bottom: 1px dashed #ccc;
+        padding-bottom: 10px;
+      }
+    }
+    
+    .print-voter-name {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -157,6 +285,20 @@
   </header>
 
   <div class="container">
+    
+    <div id="printVoterHeader" class="print-voter-name"></div>
+
+    <div class="action-panel">
+      <div class="voter-box">
+        <label for="voterName">Your Name:</label>
+        <input type="text" id="voterName" placeholder="Enter name for ballot...">
+      </div>
+      <button type="button" class="pdf-btn" onclick="exportToPDF()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Save Ballot as PDF
+      </button>
+    </div>
+
     <form id="ballotForm">
 
       <div class="category-card" id="cat-best-musical">
@@ -324,30 +466,38 @@
   <script>
     // 1. Manage Selection Highlighting & LocalStorage Saving
     const inputs = document.querySelectorAll('input[type="radio"]');
+    const voterInput = document.getElementById('voterName');
     
     inputs.forEach(input => {
       input.addEventListener('change', (e) => {
         const categoryName = e.target.name;
         
-        // Remove 'selected' class from all sibling options in this card block
         document.querySelectorAll(`input[name="${categoryName}"]`).forEach(cb => {
           cb.closest('.nominee-option').classList.remove('selected');
         });
         
-        // Add 'selected' class to the checked radio wrapper
         if (e.target.checked) {
           e.target.closest('.nominee-option').classList.add('selected');
           e.target.closest('.category-card').classList.add('has-selection');
         }
         
-        // Save choice straight to local storage
         localStorage.setItem(`user-pick-${categoryName}`, e.target.value);
         calculateScore();
       });
     });
 
+    // Handle Voter Name Auto-save
+    voterInput.addEventListener('input', (e) => {
+      localStorage.setItem('voter-name', e.target.value);
+    });
+
     // 2. Load cached choices out of LocalStorage on load
     window.addEventListener('DOMContentLoaded', () => {
+      // Load Name
+      const savedName = localStorage.getItem('voter-name');
+      if (savedName) voterInput.value = savedName;
+
+      // Load Picks
       inputs.forEach(input => {
         const savedChoice = localStorage.getItem(`user-pick-${input.name}`);
         if (savedChoice && input.value === savedChoice) {
@@ -357,7 +507,7 @@
         }
       });
       
-      // Load any saved actual winners if testing or tracking live
+      // Load Admin-Simulations
       document.querySelectorAll('.admin-select').forEach(select => {
         const cat = select.getAttribute('data-cat');
         const savedWinner = localStorage.getItem(`actual-winner-${cat}`);
@@ -365,7 +515,6 @@
           select.value = savedWinner;
         }
         
-        // Listen for changes on admin selects
         select.addEventListener('change', (e) => {
           localStorage.setItem(`actual-winner-${cat}`, e.target.value);
           calculateScore();
@@ -385,7 +534,6 @@
         const category = select.getAttribute('data-cat');
         const trueWinner = select.value;
         
-        // Only grade if a real winner has been selected from the menu drop
         if (trueWinner) {
           totalCalculatedCategories++;
           const userPick = localStorage.getItem(`user-pick-${category}`);
@@ -395,7 +543,6 @@
         }
       });
 
-      // Update the visual display items
       const scoreNumDisplay = document.getElementById('userScore');
       const accuracyDisplay = document.getElementById('accuracyPct');
       
@@ -406,6 +553,25 @@
         scoreNumDisplay.textContent = "0 / 0";
         accuracyDisplay.textContent = "0%";
       }
+    }
+
+    // 4. PDF Generation Engine
+    function exportToPDF() {
+      const name = voterInput.value.trim() || "Anonymous Broadway Fan";
+      const printHeader = document.getElementById('printVoterHeader');
+      
+      // Set the dynamic printer header title
+      printHeader.textContent = `OFFICIAL BALLOT OF: ${name.toUpperCase()}`;
+      
+      // Set the document title dynamically so the downloaded file defaults to a pretty name
+      const originalTitle = document.title;
+      document.title = `Tony_Awards_2026_Ballot_${name.replace(/\s+/g, '_')}`;
+      
+      // Trigger native high-fidelity print layout engine
+      window.print();
+      
+      // Reset document title post-print trigger
+      document.title = originalTitle;
     }
   </script>
 </body>

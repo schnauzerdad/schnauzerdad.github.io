@@ -1,1 +1,413 @@
 # schnauzerdad.github.io
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tony Awards 2026 Ballot & Score Tracker</title>
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #1e2640;
+      --accent-gold: #dfb15b;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --selected-border: #4f46e5;
+      --success-green: #10b981;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    header {
+      text-align: center;
+      padding: 40px 20px;
+      margin-bottom: 30px;
+      background: linear-gradient(135deg, #111827 0%, #1e1b4b 100%);
+      border-radius: 12px;
+      border-bottom: 4px solid var(--accent-gold);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      color: var(--accent-gold);
+      letter-spacing: 1px;
+    }
+
+    header p {
+      margin: 10px 0 0 0;
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .category-card {
+      background-color: var(--card-bg);
+      border-radius: 10px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border-left: 5px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .category-card.has-selection {
+      border-left-color: var(--accent-gold);
+    }
+
+    .category-title {
+      font-size: 1.4rem;
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: var(--accent-gold);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+    }
+
+    .nominee-option {
+      display: block;
+      background-color: rgba(255, 255, 255, 0.03);
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .nominee-option:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .nominee-option input[type="radio"] {
+      margin-right: 12px;
+      transform: scale(1.2);
+      accent-color: var(--accent-gold);
+    }
+
+    /* Style for when a user selects an item */
+    .nominee-option.selected {
+      background-color: rgba(79, 70, 229, 0.2);
+      border-color: var(--selected-border);
+    }
+
+    /* Scoreboard Section styling */
+    .scoreboard-section {
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+      border: 2px dashed var(--accent-gold);
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .scoring-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+
+    .score-box {
+      background: rgba(0,0,0,0.3);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    .score-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--accent-gold);
+    }
+
+    .admin-select {
+      background: #374151;
+      color: white;
+      border: 1px solid var(--text-muted);
+      padding: 6px;
+      border-radius: 4px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 5px;
+      padding: 30px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>79th Annual Tony Awards</h1>
+    <p>Your Friend Group's Official 2026 Ballot & Scorecard</p>
+  </header>
+
+  <div class="container">
+    <form id="ballotForm">
+
+      <div class="category-card" id="cat-best-musical">
+        <h2 class="category-title">Best Musical</h2>
+        <label class="nominee-option">
+          <input type="radio" name="best-musical" value="lost-boys"> <strong>The Lost Boys</strong>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="best-musical" value="schmigadoon"> <strong>Schmigadoon!</strong>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="best-musical" value="titanique"> <strong>Titaníque</strong>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="best-musical" value="two-strangers"> <strong>Two Strangers (Carry a Cake Across New York)</strong>
+        </label>
+      </div>
+
+      <div class="category-card" id="cat-best-play">
+        <h2 class="category-title">Best Play</h2>
+        <label class="nominee-option">
+          <input type="radio" name="best-play" value="balusters"> <strong>The Balusters</strong> (David Lindsay-Abaire)
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="best-play" value="giant"> <strong>Giant</strong> (Mark Rosenblatt)
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="best-play" value="liberation"> <strong>Liberation</strong> (Bess Wohl)
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="best-play" value="little-bear"> <strong>Little Bear Ridge Road</strong> (Samuel D. Hunter)
+        </label>
+      </div>
+
+      <div class="category-card" id="cat-revival-musical">
+        <h2 class="category-title">Best Revival of a Musical</h2>
+        <label class="nominee-option">
+          <input type="radio" name="revival-musical" value="cats"> <strong>Cats: The Jellicle Ball</strong>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="revival-musical" value="ragtime"> <strong>Ragtime</strong>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="revival-musical" value="rocky-horror"> <strong>Richard O'Brien's The Rocky Horror Show</strong>
+        </label>
+      </div>
+
+      <div class="category-card" id="cat-actor-musical">
+        <h2 class="category-title">Best Leading Actor in a Musical</h2>
+        <label class="nominee-option">
+          <input type="radio" name="actor-musical" value="christopher"> <strong>Nicholas Christopher</strong> — <em>Chess</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actor-musical" value="evans"> <strong>Luke Evans</strong> — <em>The Rocky Horror Show</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actor-musical" value="henry"> <strong>Joshua Henry</strong> — <em>Ragtime</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actor-musical" value="tutty"> <strong>Sam Tutty</strong> — <em>Two Strangers</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actor-musical" value="uranowitz"> <strong>Brandon Uranowitz</strong> — <em>Ragtime</em>
+        </label>
+      </div>
+
+      <div class="category-card" id="cat-actress-musical">
+        <h2 class="category-title">Best Leading Actress in a Musical</h2>
+        <label class="nominee-option">
+          <input type="radio" name="actress-musical" value="chase"> <strong>Sara Chase</strong> — <em>Schmigadoon!</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actress-musical" value="hsu"> <strong>Stephanie Hsu</strong> — <em>The Rocky Horror Show</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actress-musical" value="levy"> <strong>Caissie Levy</strong> — <em>Ragtime</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actress-musical" value="mindelle"> <strong>Marla Mindelle</strong> — <em>Titaníque</em>
+        </label>
+        <label class="nominee-option">
+          <input type="radio" name="actress-musical" value="pitts"> <strong>Christiani Pitts</strong> — <em>Two Strangers</em>
+        </label>
+      </div>
+
+    </form>
+
+    <div class="scoreboard-section">
+      <h2>🏆 Live Results Simulation</h2>
+      <p>Picks are auto-saved! On awards night, use the dropdown options below to lock in the official winners and see your live performance scorecard score update instantly.</p>
+      
+      <div class="scoring-grid">
+        <div class="score-box">
+          <div>Your Score</div>
+          <div class="score-number" id="userScore">0 / 5</div>
+        </div>
+        <div class="score-box">
+          <div>Accuracy Rate</div>
+          <div class="score-number" id="accuracyPct">0%</div>
+        </div>
+      </div>
+
+      <h3 style="color: var(--accent-gold); margin-top: 25px;">Set Official Winners:</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; text-align: left;">
+        <div>
+          <label>Best Musical:</label>
+          <select class="admin-select" data-cat="best-musical">
+            <option value="">-- Waiting for Announcement --</option>
+            <option value="lost-boys">The Lost Boys</option>
+            <option value="schmigadoon">Schmigadoon!</option>
+            <option value="titanique">Titaníque</option>
+            <option value="two-strangers">Two Strangers</option>
+          </select>
+        </div>
+        <div>
+          <label>Best Play:</label>
+          <select class="admin-select" data-cat="best-play">
+            <option value="">-- Waiting for Announcement --</option>
+            <option value="balusters">The Balusters</option>
+            <option value="giant">Giant</option>
+            <option value="liberation">Liberation</option>
+            <option value="little-bear">Little Bear Ridge Road</option>
+          </select>
+        </div>
+        <div>
+          <label>Best Revival of a Musical:</label>
+          <select class="admin-select" data-cat="revival-musical">
+            <option value="">-- Waiting for Announcement --</option>
+            <option value="cats">Cats: The Jellicle Ball</option>
+            <option value="ragtime">Ragtime</option>
+            <option value="rocky-horror">The Rocky Horror Show</option>
+          </select>
+        </div>
+        <div>
+          <label>Best Actor (Musical):</label>
+          <select class="admin-select" data-cat="actor-musical">
+            <option value="">-- Waiting for Announcement --</option>
+            <option value="christopher">Nicholas Christopher</option>
+            <option value="evans">Luke Evans</option>
+            <option value="henry">Joshua Henry</option>
+            <option value="tutty">Sam Tutty</option>
+            <option value="uranowitz">Brandon Uranowitz</option>
+          </select>
+        </div>
+        <div>
+          <label>Best Actress (Musical):</label>
+          <select class="admin-select" data-cat="actress-musical">
+            <option value="">-- Waiting for Announcement --</option>
+            <option value="chase">Sara Chase</option>
+            <option value="hsu">Stephanie Hsu</option>
+            <option value="levy">Caissie Levy</option>
+            <option value="mindelle">Marla Mindelle</option>
+            <option value="pitts">Christiani Pitts</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>Built for the 2026 Tony Awards Watch Party. May the best Broadway fan win!</p>
+  </footer>
+
+  <script>
+    // 1. Manage Selection Highlighting & LocalStorage Saving
+    const inputs = document.querySelectorAll('input[type="radio"]');
+    
+    inputs.forEach(input => {
+      input.addEventListener('change', (e) => {
+        const categoryName = e.target.name;
+        
+        // Remove 'selected' class from all sibling options in this card block
+        document.querySelectorAll(`input[name="${categoryName}"]`).forEach(cb => {
+          cb.closest('.nominee-option').classList.remove('selected');
+        });
+        
+        // Add 'selected' class to the checked radio wrapper
+        if (e.target.checked) {
+          e.target.closest('.nominee-option').classList.add('selected');
+          e.target.closest('.category-card').classList.add('has-selection');
+        }
+        
+        // Save choice straight to local storage
+        localStorage.setItem(`user-pick-${categoryName}`, e.target.value);
+        calculateScore();
+      });
+    });
+
+    // 2. Load cached choices out of LocalStorage on load
+    window.addEventListener('DOMContentLoaded', () => {
+      inputs.forEach(input => {
+        const savedChoice = localStorage.getItem(`user-pick-${input.name}`);
+        if (savedChoice && input.value === savedChoice) {
+          input.checked = true;
+          input.closest('.nominee-option').classList.add('selected');
+          input.closest('.category-card').classList.add('has-selection');
+        }
+      });
+      
+      // Load any saved actual winners if testing or tracking live
+      document.querySelectorAll('.admin-select').forEach(select => {
+        const cat = select.getAttribute('data-cat');
+        const savedWinner = localStorage.getItem(`actual-winner-${cat}`);
+        if (savedWinner) {
+          select.value = savedWinner;
+        }
+        
+        // Listen for changes on admin selects
+        select.addEventListener('change', (e) => {
+          localStorage.setItem(`actual-winner-${cat}`, e.target.value);
+          calculateScore();
+        });
+      });
+
+      calculateScore();
+    });
+
+    // 3. Score Calculation Engine
+    function calculateScore() {
+      let score = 0;
+      let totalCalculatedCategories = 0;
+      const selectors = document.querySelectorAll('.admin-select');
+
+      selectors.forEach(select => {
+        const category = select.getAttribute('data-cat');
+        const trueWinner = select.value;
+        
+        // Only grade if a real winner has been selected from the menu drop
+        if (trueWinner) {
+          totalCalculatedCategories++;
+          const userPick = localStorage.getItem(`user-pick-${category}`);
+          if (userPick === trueWinner) {
+            score++;
+          }
+        }
+      });
+
+      // Update the visual display items
+      const scoreNumDisplay = document.getElementById('userScore');
+      const accuracyDisplay = document.getElementById('accuracyPct');
+      
+      if (totalCalculatedCategories > 0) {
+        scoreNumDisplay.textContent = `${score} / ${totalCalculatedCategories}`;
+        accuracyDisplay.textContent = `${Math.round((score / totalCalculatedCategories) * 100)}%`;
+      } else {
+        scoreNumDisplay.textContent = "0 / 0";
+        accuracyDisplay.textContent = "0%";
+      }
+    }
+  </script>
+</body>
+</html>
